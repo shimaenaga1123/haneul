@@ -1,23 +1,18 @@
-# -*- coding: utf-8 -*-
-from rpython.rlib import jit
-
-from instruction import *
 from constant import *
 from error import *
 from frame import Frame
+from instruction import *
 
 jitdriver = jit.JitDriver(greens=['pc', 'code_object'],
                           reds=['frame', 'self']
-                          # , virtualizables=['frame']
                           )
-
 
 @jit.unroll_safe
 def resolve_josa(josa, josa_map):
   if josa == u"_":
     for (j, (k, v)) in enumerate(josa_map):
       if v is None:
-        return (k, j)
+        return k, j
     raise HaneulError(u"이 함수에는 더 이상 값을 적용할 수 없습니다.")
   else:
     for (j, (k, v)) in enumerate(josa_map):
@@ -25,7 +20,7 @@ def resolve_josa(josa, josa_map):
         if v is not None:
           raise DuplicateJosa(josa)
 
-        return (josa, j)
+        return josa, j
 
     raise UnboundJosa(josa)
 
@@ -112,8 +107,6 @@ class Interpreter:
           self.env.store(code_object.var_names[inst.operand_int], frame.pop())
 
         elif op == INST_CALL:
-          given_arity = len(inst.operand_josa_list)
-
           value = frame.pop()
           if isinstance(value, ConstFunc):
             args = []
@@ -190,7 +183,7 @@ class Interpreter:
         elif op == INST_POP_JMP_IF_FALSE:
           value = frame.pop()
           if isinstance(value, ConstBoolean):
-            if value.boolval == False:
+            if not value.boolval:
               pc = inst.operand_int
               continue
           else:

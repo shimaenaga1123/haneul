@@ -1,24 +1,18 @@
-# -*- coding: utf-8 -*-
 import sys
-import os
-sys.path.append('/Users/suhdonghwi/Documents/utils/pypy')
-sys.path.append('C:\Users\hwido\Documents\Nuri\pypy')
-
-import math
-
-from instruction import *
-from constant import *
 from interpreter import *
 
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib.rstruct.runpack import runpack
 
 from target import *
+from instruction import *
 
-TYPE_NAMES = ['NONE', 'INTEGER', 'REAL', 'CHAR', 'BOOLEAN', 'FUNC']
-for (i, typename) in enumerate(TYPE_NAMES):
-  globals()['TYPE_' + typename] = i
-
+TYPE_NONE = 0
+TYPE_INTEGER = 1
+TYPE_REAL = 2
+TYPE_CHAR = 3
+TYPE_BOOLEAN = 4
+TYPE_FUNC = 5
 
 class LineInfo:
   def __init__(self, line = 0):
@@ -80,13 +74,13 @@ class BytecodeParser:
     result = u''
 
     if head < 0x80:
-      result = unichr(head)
+      result = chr(head)
     elif head < 0xe0:
-      result = (chr(head) + self.consume_raw(1)).decode('utf-8')
+      result = (chr(head) + self.consume_raw(1)).encode('utf-8')
     elif head < 0xf0:
-      result = (chr(head) + self.consume_raw(2)).decode('utf-8')
+      result = (chr(head) + self.consume_raw(2)).encode('utf-8')
     else:
-      result = (chr(head) + self.consume_raw(3)).decode('utf-8')
+      result = (chr(head) + self.consume_raw(3)).encode('utf-8')
 
     return ConstChar(result)
 

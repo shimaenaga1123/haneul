@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rpython.rlib import jit
 
 from error import *
@@ -6,7 +5,6 @@ from error import *
 
 class Constant:
   _attrs_ = []
-
   def add(self, other):
     raise BinaryTypeError(self, other, u"더하기")
 
@@ -142,7 +140,7 @@ class ConstInteger(Constant):
     return ConstInteger(-self.intval)
 
   def show(self):
-    return str(self.intval).decode('utf-8')
+    return str(self.intval).encode('utf-8')
 
   def type_name(self):
     return u"정수"
@@ -218,7 +216,7 @@ class ConstReal(Constant):
     return ConstReal(-self.doubleval)
 
   def show(self):
-    return str(self.doubleval).decode('utf-8')
+    return str(self.doubleval).encode('utf-8')
 
   def type_name(self):
     return u"실수"
@@ -342,7 +340,10 @@ class CodeObject:
       'var_names', 'const_table', 'name', 'file_path', 'code', 'local_number', 'stack_size', 'line_no', 'line_no_table', 'free_vars'
   ]
 
-  def __init__(self, var_names, const_table, name, file_path, code, local_number, stack_size, line_no, line_no_table, free_vars=[]):
+  def __init__(self, var_names, const_table, name, file_path, code, local_number, stack_size, line_no, line_no_table,
+               free_vars=None):
+    if free_vars is None:
+        free_vars = []
     self.var_names = var_names
     self.const_table = const_table
     self.name = name

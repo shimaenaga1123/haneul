@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
 import os
 
-from interpreter import Interpreter, CodeObject, Env
 from bytecode_parser import BytecodeParser
-from error import HaneulError
-from constant import ConstInteger
 from environment import default_globals
+from error import HaneulError
+from interpreter import Interpreter, Env
 
 def entry_point(argv):
-
   try:
     filename = argv[1]
   except IndexError:
-    print "파일이 필요합니다."
+    print("파일이 필요합니다.")
     return 1
 
   content = ""
@@ -21,7 +18,7 @@ def entry_point(argv):
     content = fp.read()
     fp.close()
   else:
-    fp = os.open(filename, os.O_RDONLY, 0777)	 
+    fp = os.open(filename, os.O_RDONLY)
     while True:	
       read = os.read(fp, 4096)	
       if len(read) == 0:	
@@ -52,9 +49,9 @@ def entry_point(argv):
 
     for (name, path, line) in stack_trace:
       if name == u"":
-        print (u"파일 '%s', %d번째 줄:" % (path, line)).encode('utf-8')
+        print ((u"파일 '%s', %d번째 줄:" % (path, line)).encode('utf-8'))
       else:
-        print (u"파일 '%s', %d번째 줄, %s:" % (path, line, name)).encode('utf-8')
+        print ((u"파일 '%s', %d번째 줄, %s:" % (path, line, name)).encode('utf-8'))
 
     (_, path, line) = stack_trace[-1]
     error_file = open(path.encode('utf-8'), 'r') 
@@ -67,18 +64,18 @@ def entry_point(argv):
       last_line = last_line[:-1]
 
     line_width = len(str(line))
-    print (" " * line_width) + " |"
-    print "%d | %s" % (line, last_line)
-    print (" " * line_width) + " |"
-    print e.message.encode('utf-8')
+    print ((" " * line_width) + " |")
+    print ("%d | %s" % (line, last_line))
+    print ((" " * line_width) + " |")
+    print (e.message.encode('utf-8'))
 
   return 0
 
 
-def target(*args):
+def target():
   return entry_point, None
 
 
-def jitpolicy(driver):
+def jitpolicy():
   from rpython.jit.codewriter.policy import JitPolicy
   return JitPolicy()

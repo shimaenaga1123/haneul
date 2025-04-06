@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-from rpython.rlib import rfile
+import os
 
-from constant import *
-from bytecode_parser import BytecodeParser
-from error import InvalidType
+from rpython.rlib import rfile
 from rpython.rlib import rrandom, rtimer
 from rpython.rlib.rarithmetic import intmask, r_uint
-import os
-import time
+
+from bytecode_parser import BytecodeParser
+from constant import *
+from error import InvalidType
 
 LINE_BUFFER_LENGTH = 1024
 
@@ -28,7 +27,7 @@ def stringize_builtin_func(args):
 
   return list_to_struct(l)
 
-def input_builtin_func(args):
+def input_builtin_func():
   stdin, stdout, stderr = rfile.create_stdio()
   line = stdin.readline(LINE_BUFFER_LENGTH)
   parser = BytecodeParser(line)
@@ -79,7 +78,7 @@ def to_real_builtin_func(args):
   else:
     raise InvalidType(u"실수화할 수 있는", a.type_name())
 
-def random_builtin_func(args):
+def random_builtin_func():
   rng = rrandom.Random(seed=r_uint(rtimer.read_timestamp()))
   return ConstInteger(intmask(rng.genrand32()))
 
@@ -93,7 +92,7 @@ def get_unicode_func(args):
 def nth_unicode_func(args):
   a = args[0]
   if isinstance(a, ConstInteger):
-    return ConstChar(unichr(a.intval))
+    return ConstChar(chr(a.intval))
   else:
     raise InvalidType(u"정수", a.type_name())
 
